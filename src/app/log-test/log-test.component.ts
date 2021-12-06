@@ -1,5 +1,8 @@
 import {Component} from "@angular/core";
 import {LogService} from "../shared/log.service";
+import {HttpClient} from "@angular/common/http";
+import {catchError} from "rxjs/operators";
+import {of} from "rxjs";
 
 @Component(
   {
@@ -9,7 +12,7 @@ import {LogService} from "../shared/log.service";
 )
 export class LogTestComponent {
 
-  constructor(private logger: LogService) {
+  constructor(private logger: LogService,private http:HttpClient) {
 
   }
 
@@ -28,5 +31,16 @@ export class LogTestComponent {
   }
   testLog(): void {
     this.logger.log("test the `log()` Metod");
+  }
+
+  testGlobalError() {
+    throw Error("The app component has thrown an error!");
+  }
+
+  testHttpInterceptorError() {
+    data: {};
+    this.http.get('https://localhost:7213/user').pipe(
+      catchError(err => of('there was an error')) // return a Observable with a error message to display
+    ).subscribe(data => data = data);
   }
 }

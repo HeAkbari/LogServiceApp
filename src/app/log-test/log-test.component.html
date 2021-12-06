@@ -7,10 +7,14 @@
 </head>
 <body>
 <h1>Log Service Test</h1>
-<button (click)="testInfo()">Info Test</button>
-<button (click)="testWarn()">Warn Test</button>
-<button (click)="testError()">Error Test</button>
-<button (click)="testFatal()">Fatal Test</button>
-<button (click)="testLog()">Log Test</button>
+<div>
+  <button (click)="testInfo()">Info Test</button>
+  <button (click)="testWarn()">Warn Test</button>
+  <button (click)="testError()">Error Test</button>
+  <button (click)="testFatal()">Fatal Test</button>
+  <button (click)="testLog()">Log Test</button>
+  <button (click)="testGlobalError()">Global Error Test</button>
+  <button (click)="testHttpInterceptorError()">Http Interceptor Error Test</button>
+</div>
 </body>
 </html>

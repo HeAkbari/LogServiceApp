@@ -99,9 +99,12 @@ export class LogEntry {
     let ret: string = params.join(",");
     if (params.some(params => typeof params == "object")) {
       ret = "";
-      for (let item of params) {
-        ret += JSON.stringify(item) + ",";
+      try {
+        for (let item of params) {
+          ret += JSON.stringify(item) + ",";
+        }
       }
+      catch{};
     }
     return ret;
   }
