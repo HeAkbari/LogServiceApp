@@ -4,9 +4,7 @@ import {HttpErrorResponse, HttpRequest} from "@angular/common/http";
 
 @Injectable()
 export class GlobalErrorHandler implements ErrorHandler {
-  constructor(
-    private logger: LogService
-  ) {
+  constructor(    private logger: LogService  ) {
 
   }
 

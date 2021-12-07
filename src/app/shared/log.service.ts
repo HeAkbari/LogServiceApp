@@ -28,8 +28,9 @@ export class LogService {
       entry.logWithDate = this.logWithDate;
       //this.logArray.push(entry.buildLogString())
       //console.log(entry.buildLogString());
-      for (let logger of this.publishers) {
-        logger.log(entry).subscribe(response => console.log(response));
+      for (let publisher of this.publishers) {
+        publisher.log(entry).subscribe(response => console.log(response));
+
       }
     }
   }

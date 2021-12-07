@@ -109,7 +109,7 @@ export class LogWebApi extends LogPublisher {
     }
     errors.push(msg);
 
-    console.error('An error occurred', errors);
+   // console.error('An error occurred', errors);
     return throwError(errors);
   }
 

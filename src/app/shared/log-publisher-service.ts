@@ -53,17 +53,17 @@ export class LogPublisherService {
     return this.http.get<LogPublisherConfig[]>(PUBLISHERS_FILE);
   }
 
-  private handleErrors(error: any):Observable<any> {
-    let errors: string[] = [];
-    let msg: string = "";
-
-    msg = "Status: " + error.status;
-    msg += " - Status Text: " + error.statusText;
-    if (error.json()) {
-      msg += " - Exception Message: " + error.json().exceptionMessage;
-    }
-    errors.push(msg);
-    console.error('An error occurred', errors);
-    return throwError(errors);
-  }
+  // private handleErrors(error: any):Observable<any> {
+  //   let errors: string[] = [];
+  //   let msg: string = "";
+  //
+  //   msg = "Status: " + error.status;
+  //   msg += " - Status Text: " + error.statusText;
+  //   if (error.json()) {
+  //     msg += " - Exception Message: " + error.json().exceptionMessage;
+  //   }
+  //   errors.push(msg);
+  //   console.error('An error occurred', errors);
+  //   return throwError(errors);
+  // }
 }

@@ -12,7 +12,7 @@ import {of} from "rxjs";
 )
 export class LogTestComponent {
 
-  constructor(private logger: LogService,private http:HttpClient) {
+  constructor(private logger: LogService, private http: HttpClient) {
 
   }
 
@@ -23,12 +23,15 @@ export class LogTestComponent {
   testWarn(): void {
     this.logger.warn("test the `warn()` Metod");
   }
+
   testError(): void {
     this.logger.error("test the `error()` Metod");
   }
+
   testFatal(): void {
     this.logger.fatal("test the `fatal()` Metod");
   }
+
   testLog(): void {
     this.logger.log("test the `log()` Metod");
   }
@@ -38,7 +41,9 @@ export class LogTestComponent {
   }
 
   testHttpInterceptorError() {
-    data: {};
+    data: {
+    }
+    ;
     this.http.get('https://localhost:7213/user').pipe(
       catchError(err => of('there was an error')) // return a Observable with a error message to display
     ).subscribe(data => data = data);
