@@ -10,7 +10,7 @@ export class AppComponent {
   title = 'log-service-app';
 
   constructor(private logger: LogService) {
-logger.
+
   }
 
 }
