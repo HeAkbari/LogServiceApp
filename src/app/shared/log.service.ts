@@ -5,12 +5,15 @@ import {LogPublisherService} from "./log-publisher-service";
 @Injectable()
 export class LogService {
   constructor(private publishersService: LogPublisherService) {
-    this.publishers=publishersService.publishers;
+    this.publishers = publishersService.publishers;
+
   }
+
   level: LogLevel = LogLevel.All;
   logWithDate = true;
-  publishers:LogPublisher[]=[];
-  logArray:string[]=[];
+  publishers: LogPublisher[] = [];
+  logArray: string[] = [];
+
   private shouldLog(level: LogLevel): boolean {
     let ret: boolean = false;
     if ((level >= this.level && level !== LogLevel.Off) || this.level === LogLevel.All) {
@@ -19,80 +22,89 @@ export class LogService {
     return ret;
   }
 
-  writeToLog(msg: string, level: LogLevel, params: any[]) {
+  writeToLog(msg: string, level: LogLevel, stackTrace: string,statusCode: number|undefined, params: any[] | undefined = undefined) {
     if (this.shouldLog(level)) {
       let entry: LogEntry = new LogEntry();
       entry.message = msg;
-      entry.level = level;
-      entry.extraInfo = params;
-      entry.logWithDate = this.logWithDate;
-      //this.logArray.push(entry.buildLogString())
-      //console.log(entry.buildLogString());
+      entry.statusCode = statusCode?statusCode:undefined;
+      entry.levelState = LogLevel[level];
+      entry.stackTrace = stackTrace;
+      entry.extraInfo = params?.length ? params : undefined;
       for (let publisher of this.publishers) {
         publisher.log(entry).subscribe(response => console.log(response));
-
       }
     }
   }
 
-  debug(msg: string, ...optionalParams: any[]) {
-    this.writeToLog(msg, LogLevel.Debug, optionalParams);
+  debug(msg: string, stackTrace: string = "",statusCode: number|undefined=undefined, ...optionalParams: any[]) {
+    this.writeToLog(msg, LogLevel.Debug, stackTrace,statusCode, optionalParams);
   }
 
-  info(msg: string, ...optionalParams: any[]) {
-    this.writeToLog(msg, LogLevel.Info, optionalParams);
+  info(msg: string, stackTrace: string = "",statusCode: number|undefined=undefined, ...optionalParams: any[]) {
+    this.writeToLog(msg, LogLevel.Info, stackTrace,statusCode, optionalParams);
   }
 
-  warn(msg: string, ...optionalParams: any[]) {
-    this.writeToLog(msg, LogLevel.Warn, optionalParams);
+  warn(msg: string, stackTrace: string = "",statusCode: number|undefined=undefined, ...optionalParams: any[]) {
+    this.writeToLog(msg, LogLevel.Warn, stackTrace,statusCode, optionalParams);
   }
 
-  error(msg: string, ...optionalParams: any[]) {
-    this.writeToLog(msg, LogLevel.Error, optionalParams);
+  error(msg: string, stackTrace: string = "",statusCode: number|undefined=undefined, ...optionalParams: any[]) {
+    this.writeToLog(msg, LogLevel.Error, stackTrace,statusCode, optionalParams);
   }
 
-  fatal(msg: string, ...optionalParams: any[]) {
-    this.writeToLog(msg, LogLevel.Fatal, optionalParams);
+  fatal(msg: string, stackTrace: string = "",statusCode: number|undefined=undefined, ...optionalParams: any[]) {
+    this.writeToLog(msg, LogLevel.Fatal, stackTrace,statusCode, optionalParams);
   }
 
-  log(msg: string, ...optionalParams: any[]) {
-    this.writeToLog(msg, LogLevel.All, optionalParams);
+  log(msg: string, stackTrace: string = "",statusCode: number|undefined=undefined, ...optionalParams: any[]) {
+    this.writeToLog(msg, LogLevel.All, stackTrace ,statusCode, optionalParams);
   }
 }
 
 
-
-
+// export enum LogLevel {
+//   All = "All",
+//   Debug = "Debug",
+//   Info = "Info",
+//   Warn = "Warn",
+//   Error = "Error",
+//   Fatal = "Fatal",
+//   Off = "Off"
+// }
 export enum LogLevel {
-  All = 0,
-  Debug = 1,
-  Info = 2,
-  Warn = 3,
-  Error = 4,
-  Fatal = 5,
-  Off = 6
+  All = 1,
+  Debug = 2,
+  Info = 3,
+  Warn = 4,
+  Error = 5,
+  Fatal = 6,
+  Off = 7
 }
 
 export class LogEntry {
   entryDate: Date = new Date();
   message: string = "";
-  level: LogLevel = LogLevel.Debug;
-  extraInfo: any[] = [];
-  logWithDate: boolean = true;
+  statusCode:number|undefined=undefined;
+  levelState: string = LogLevel[LogLevel.Debug];
+  //levelCode: LogLevel = LogLevel.Debug;
+  stackTrace: string = "";
+  extraInfo: any[] | undefined = undefined;
+
+  //logWithDate: boolean = true;
 
   buildLogString(): string {
     let ret: string = "";
+    ret = new Date() + " - ";
 
-    if (this.logWithDate) {
-      ret = new Date() + " - ";
-    }
 
-    ret += "Type: " + LogLevel[this.level];
+    ret += "Type: " + this.levelState;
     ret += " - Message: " + this.message;
-    if (this.extraInfo.length) {
+    if (this.stackTrace.length) {
+      ret += " - StackTrace: " + this.stackTrace
+    }
+    if (this.extraInfo) {
       ret += " - Extra Info: " + this.formatParams(this.extraInfo);
     }
-
     return ret;
   }
 
@@ -100,12 +112,9 @@ export class LogEntry {
     let ret: string = params.join(",");
     if (params.some(params => typeof params == "object")) {
       ret = "";
-      try {
         for (let item of params) {
           ret += JSON.stringify(item) + ",";
         }
-      }
-      catch{};
     }
     return ret;
   }

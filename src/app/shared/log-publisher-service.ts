@@ -31,7 +31,7 @@ export class LogPublisherService {
             logPub = new LogConsole();
             break;
           case "localstorage":
-            logPub = new LogLocalStorage();
+            logPub = new LogLocalStorage(this.http);
             break;
           case "webapi":
             logPub = new LogWebApi(this.http);
@@ -45,6 +45,7 @@ export class LogPublisherService {
         // Add publisher to array
         this.publishers.push(logPub);
       }
+
     });
 
   }

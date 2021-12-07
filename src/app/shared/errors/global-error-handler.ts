@@ -10,11 +10,11 @@ export class GlobalErrorHandler implements ErrorHandler {
 
   handleError(error: any) {
     // Check if it's an error from an HTTP response
-    if (!(error instanceof HttpErrorResponse)) {
+    if ((error instanceof HttpErrorResponse)) {
       //error = error.rejection; // get the error object
-      this.logger.log('Error from global error handler', 'no HttpErrorResponse', error);
+      this.logger.error(error.message,"",error.status);
     } else
-      this.logger.error('Error from global error handler', error.message);
+      this.logger.error(error.message, error.stack);
   }
 
 

@@ -1,6 +1,7 @@
 import {Observable, of, Subject, throwError} from "rxjs";
-import {LogEntry} from "./log.service";
-import {HttpClient, HttpResponse, HttpHeaders} from '@angular/common/http';
+import {LogEntry, LogLevel} from "./log.service";
+import {HttpClient, HttpHeaders} from '@angular/common/http';
+
 
 export abstract class LogPublisher {
   location: string = "";
@@ -24,12 +25,20 @@ export class LogConsole extends LogPublisher {
 }
 
 export class LogLocalStorage extends LogPublisher {
-  constructor() {
+  constructor(private http: HttpClient) {
     // Must call `super()`from derived classes
     super();
-
     // Set location
     this.location = "logging";
+    this.checkLocalStorageReadyToClear().subscribe((response: any) => {
+      if (response) {
+        var logger = new LogWebApi(this.http);
+        logger.logs(response)
+          .subscribe(
+            () => this.clear(),
+            error => throwError(error));
+      }
+    })
   }
 
   // Append log entry to local storage
@@ -63,6 +72,14 @@ export class LogLocalStorage extends LogPublisher {
     localStorage.removeItem(this.location);
     return of(true);
   }
+
+  checkLocalStorageReadyToClear(): Observable<boolean> {
+    // Get previous values from local storage
+    // @ts-ignore
+    let values = JSON.parse(localStorage.getItem(this.location)) || [];
+    values= values.length >= 5?values:undefined;
+    return of(values)
+  }
 }
 
 export class LogWebApi extends LogPublisher {
@@ -71,7 +88,7 @@ export class LogWebApi extends LogPublisher {
     super();
 
     // Set location
-    this.location = "/api/log";
+    this.location = "https://localhost:7213/Log";
   }
 
   // Add log entry to back end data store
@@ -81,7 +98,23 @@ export class LogWebApi extends LogPublisher {
     let headers = new HttpHeaders({'Content-Type': 'application/json'});
     // let options = new RequestOptions({ headers: headers });
 
-    this.http.post(this.location, entry, {headers: headers})
+    this.http.post("https://localhost:7213/Log", entry, {headers: headers})
+      .subscribe(
+        (response: any) => {
+          data = response;
+          subject.next(data);
+        },
+        error => (this.handleErrors)
+      );
+    return subject.asObservable();
+  }
+
+  logs(values: LogEntry[]) {
+    var data: boolean = false;
+    var subject = new Subject<boolean>();
+    let headers = new HttpHeaders({'Content-Type': 'application/json'});
+
+    this.http.post("https://localhost:7213/Log", values, {headers: headers})
       .subscribe(
         (response: any) => {
           data = response;
@@ -109,7 +142,7 @@ export class LogWebApi extends LogPublisher {
     }
     errors.push(msg);
 
-   // console.error('An error occurred', errors);
+    // console.error('An error occurred', errors);
     return throwError(errors);
   }
 

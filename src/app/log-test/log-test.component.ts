@@ -2,7 +2,7 @@ import {Component} from "@angular/core";
 import {LogService} from "../shared/log.service";
 import {HttpClient} from "@angular/common/http";
 import {catchError} from "rxjs/operators";
-import {of} from "rxjs";
+import {of, throwError} from "rxjs";
 
 @Component(
   {
@@ -33,19 +33,28 @@ export class LogTestComponent {
   }
 
   testLog(): void {
-    this.logger.log("test the `log()` Metod");
-  }
-
-  testGlobalError() {
-    throw Error("The app component has thrown an error!");
+    this.logger.log("test the `log()` Metod","",undefined,{'status':200,'info':'test'});
   }
 
   testHttpInterceptorError() {
-    data: {
-    }
-    ;
+    data: {    }    ;
     this.http.get('https://localhost:7213/user').pipe(
-      catchError(err => of('there was an error')) // return a Observable with a error message to display
+      catchError(err => (throwError(err))) // return a Observable with a error message to display
     ).subscribe(data => data = data);
+  }
+
+  testUnHandeledError() {
+
+    let value=['a','b','c'];
+    console.log(value[10].length);
+  }
+  testHandeledError() {
+    try {
+      let value = ['a', 'b', 'c'];
+      console.log(value[10].length);
+    }
+    catch (error){
+      throw new Error('parsing data is not possible');
+    }
   }
 }

@@ -2,7 +2,7 @@
   {
     "loggerName": "console",
     "loggerLocation": "",
-    "isActive":  true
+    "isActive":  false
   },
   {
     "loggerName": "localstorage",
@@ -12,6 +12,6 @@
   {
     "loggerName": "webapi",
     "loggerLocation": "https://localhost:7213/Log",
-    "isActive": true
+    "isActive": false
   }
 ]

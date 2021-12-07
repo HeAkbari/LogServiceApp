@@ -13,7 +13,7 @@ import {catchError, map, retry} from "rxjs/operators";
 @Injectable()
 export  class HttpLoadingInterceptor implements HttpInterceptor{
   intercept(httpRequest: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {
-    return next.handle(httpRequest).pipe(retry(2));
+    return next.handle(httpRequest).pipe(retry(0));
   }
 
 }
